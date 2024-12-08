@@ -55,11 +55,11 @@ func (k keyMap) FullHelp() [][]key.Binding {
 
 var keys = keyMap{
 	Up: key.NewBinding(
-		key.WithKeys("up", "k"),
+		key.WithKeys("up", "k", "ctrl+p"),
 		key.WithHelp("↑/k", "move up"),
 	),
 	Down: key.NewBinding(
-		key.WithKeys("down", "j"),
+		key.WithKeys("down", "j", "ctrl+n"),
 		key.WithHelp("↓/j", "move down"),
 	),
 	Left: key.NewBinding(
@@ -146,9 +146,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keys.Quit):
-			return m, tea.Quit
+			if msg.String() == "q" && m.focusInput {
+				// do nothing
+			} else {
+				return m, tea.Quit
+			}
 		case key.Matches(msg, m.keys.ToggleFocus):
 			m.focusInput = !m.focusInput
+			var cmd tea.Cmd
+			return m, cmd
 		case key.Matches(msg, m.keys.Select):
 			if !m.focusInput && len(m.filtered) > 0 {
 				clipboard.WriteAll(m.filtered[m.selected])
@@ -204,8 +210,6 @@ var (
 func (m model) View() string {
 	var s strings.Builder
 
-	s.WriteString(titleStyle.Render("Emoji Picker") + "\n")
-
 	s.WriteString(m.input.View() + "\n")
 
 	switch m.state {
@@ -220,7 +224,6 @@ func (m model) View() string {
 		for i := start; i < end; i += m.cfg.GridColumns {
 			for j := 0; j < m.cfg.GridColumns && i+j < end; j++ {
 				emoji := m.filtered[i+j]
-				// Add padding to make each emoji cell the same width
 				if i+j == m.selected && !m.focusInput {
 					s.WriteString(selectedStyle.Render(" " + emoji + " "))
 				} else {
