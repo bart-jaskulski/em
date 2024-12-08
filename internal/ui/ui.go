@@ -3,7 +3,7 @@ package ui
 import (
 	"strings"
 
-  "github.com/atotto/clipboard"
+	"github.com/atotto/clipboard"
 	"github.com/bart-jaskulski/em/internal/cache"
 	"github.com/bart-jaskulski/em/internal/config"
 	"github.com/bart-jaskulski/em/internal/types"

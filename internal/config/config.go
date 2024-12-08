@@ -1,13 +1,13 @@
 package config
 
 type Config struct {
-    GridColumns  int
-    GridRows     int
-    MaxResults   int
+	GridColumns int
+	GridRows    int
+	MaxResults  int
 }
 
 var DefaultConfig = Config{
-    GridColumns:  4,
-    GridRows:     3,
-    MaxResults:   12,
+	GridColumns: 4,
+	GridRows:    3,
+	MaxResults:  12,
 }
