@@ -7,8 +7,6 @@ import (
     "net/http"
     "os"
     "path/filepath"
-
-    "github.com/bart-jaskulski/em/internal/config"
 )
 
 const EmojiURL = "https://github.com/muan/emojilib/raw/refs/tags/v4.0.0/dist/emoji-en-US.json"
@@ -26,12 +24,15 @@ type CacheMetadata struct {
     Version string `json:"version"`
 }
 
-func GetEmojis(cfg config.Config) (map[string][]string, error) {
+func GetEmojis() (map[string][]string, error) {
     dataDir := getDataDir()
     cachePath := filepath.Join(dataDir, "emojis.json")
     metaPath := filepath.Join(dataDir, "metadata.json")
-    if err := downloadEmojis(cachePath, metaPath, cfg); err != nil {
-        return nil, fmt.Errorf("failed to download emojis: %w", err)
+
+    if _, err := os.Stat(cachePath); os.IsNotExist(err) {
+        if err := downloadEmojis(cachePath, metaPath); err != nil {
+            return nil, fmt.Errorf("failed to download emojis: %w", err)
+        }
     }
 
     data, err := os.ReadFile(cachePath)
@@ -61,7 +62,7 @@ func loadMetadata(path string) (CacheMetadata, error) {
     return metadata, nil
 }
 
-func downloadEmojis(cachePath, metaPath string, cfg config.Config) error {
+func downloadEmojis(cachePath, metaPath string) error {
     if err := os.MkdirAll(filepath.Dir(cachePath), 0755); err != nil {
         return err
     }

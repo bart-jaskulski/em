@@ -75,17 +75,17 @@ var keys = keyMap{
 		key.WithHelp("enter", "select"),
 	),
 	ToggleFocus: key.NewBinding(
-		key.WithKeys("tab"),
+		key.WithKeys("tab", "/"),
 		key.WithHelp("tab", "switch focus"),
 	),
 	Quit: key.NewBinding(
-		key.WithKeys("esc", "ctrl+c"),
+		key.WithKeys("esc", "ctrl+c", "q"),
 		key.WithHelp("ctrl+c", "quit"),
 	),
 }
 
-func loadEmojis(cfg config.Config) tea.Msg {
-	emojis, err := cache.GetEmojis(cfg)
+func loadEmojis() tea.Msg {
+	emojis, err := cache.GetEmojis()
 	return types.EmojiLoadedMsg{Emojis: emojis, Err: err}
 }
 
@@ -105,10 +105,7 @@ func initialModel(cfg config.Config) model {
 }
 
 func (m model) Init() tea.Cmd {
-	return tea.Batch(
-		textinput.Blink,
-		func() tea.Msg { return loadEmojis(m.cfg) },
-	)
+	return loadEmojis
 }
 
 func (m model) filterEmojis() []string {
